@@ -1,0 +1,45 @@
+### ekf 配置文件 ###
+ekf_filter_node:
+    ros__parameters:
+# 输出位置估计的频率，以赫兹为单位。如果未指定，默认为30。
+# 过滤器不会在未收到任何输入之前开始计算，但一旦接收到消息，它将以此处指定的频率连续运行，而不考虑是否接收到更多输入。
+        frequency: 30.0
+
+# ekf_localization_node 和 ukf_localization_node 都使用 3D 全向运动模型。
+# 如果此参数设置为 true，则不会在状态估计中使用 3D 信息。如果未指定，默认为 false。
+# 如果在平面环境中操作并希望忽略地面平面的小变化的影响，可以使用此选项，例如 IMU 可能探测到的变化。
+        two_d_mode: false
+
+# 是否发布加速度状态。如果未指定，默认为 false。
+        publish_acceleration: true
+
+# 是否在 /tf 主题上广播变换。如果未指定，默认为 true。
+        publish_tf: true
+        
+# 1. 将 map_frame、odom_frame 和 base_link_frame 框架设置为系统中适当的框架名称。
+#    1a. 如果系统没有 map_frame，只需删除它，并确保 "world_frame" 设置为 odom_frame 的值。
+# 2. 如果融合连续的位置数据（例如轮式编码测距、视觉测距或 IMU 数据），将 "world_frame" 设置为 odom_frame 的值。
+#    这是 robot_localization 状态估计节点的默认行为。
+# 3. 如果融合受离散跳跃影响的全局绝对位置数据（例如 GPS 或从地标观测中得到的位置更新），
+#    则：
+#    3a. 将 "world_frame" 设置为 map_frame 的值。
+#    3b. 确保其他某个东西正在生成 odom->base_link 的变换。
+#        请注意，这甚至可以是 robot_localization 的另一个状态估计节点！但是，该实例不应融合全局数据。
+        map_frame: map              # 如果未指定，默认为 "map"
+        odom_frame: odom            # 如果未指定，默认为 "odom"
+        base_link_frame: base_link  # 如果未指定，默认为 "base_link"
+        world_frame: odom           # 如果未指定，默认为 odom_frame 的值
+        
+        odom0: demo/odom
+        odom0_config: [true,  true,  true,
+                       false, false, false,
+                       false, false, false,
+                       false, false, true,
+                       false, false, false]
+
+        imu0: demo/imu
+        imu0_config: [false, false, false,
+                      true,  true,  true,
+                      false, false, false,
+                      false, false, false,
+                      false, false, false]
